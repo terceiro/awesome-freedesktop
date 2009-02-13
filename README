@@ -1,0 +1,49 @@
+About
+=====
+
+This project aims to add support for freedesktop.org compliant menu and other
+freedesktop.org aspects to the awesome window manager. The idea is to implement
+the needed standards as far as it's useful.
+
+Installation
+============
+
+Just drop freedesktop.lua in your ~/.config/awesome/ directory.
+
+Main features
+=============
+
+  * a freedesktop.org-compliant (or almost) applications menu
+  * a (yet limited) icon lookup function.
+
+Usage example
+=============
+
+You can use the frerdesktop module in your awesome configuration
+(~/.config/awesome/rc.lua) like this:
+
+  -- assuming awful and beautiful were loaded before this point.
+  require("freedesktop")
+  require("debian.menu")
+
+  -- Create a laucher widget and a main menu
+  myawesomemenu = {
+     { "manual", terminal .. " -e man awesome" },
+     { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
+     { "restart", awesome.restart },
+     { "quit", awesome.quit }
+  }
+  
+  menu_items = {}
+  table.foreach(freedesktop.menu.root, function(i, submenu)
+     table.insert(menu_items, submenu)
+  end)
+  table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
+  table.insert(menu_items, { "open terminal", terminal, freedesktop.lookup_icon('terminal') })
+  table.insert(menu_items, { "Debian", debian.menu.Debian_menu.Debian, freedesktop.lookup_icon('debian-logo') })
+  
+  mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
+  
+  mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+                                       menu = mymainmenu })
+
