@@ -1,14 +1,13 @@
 About
 =====
 
-This project aims to add support for freedesktop.org compliant menu and other
-freedesktop.org aspects to the awesome window manager. The idea is to implement
-the needed standards as far as it's useful.
+This project aims to add support for freedesktop.org compliant desktop entries
+and menu.
 
 Installation
 ============
 
-Just drop freedesktop.lua in your ~/.config/awesome/ directory.
+Just drop freedesktop/ folder in your ~/.config/awesome/ directory.
 
 Main features
 =============
@@ -23,7 +22,11 @@ You can use the frerdesktop module in your awesome configuration
 (~/.config/awesome/rc.lua) like this:
 
   -- assuming awful and beautiful were loaded before this point.
-  require("freedesktop")
+  require('freedesktop.utils')
+  freedesktop.utils.terminal = 'x-terminal-emulator' -- default: 'xterm'
+  freedesktop.utils.icon_theme = 'oxygen' -- look at /usr/share/icons/
+  require('freedesktop.menu')
+
   require("debian.menu")
 
   -- Create a laucher widget and a main menu
