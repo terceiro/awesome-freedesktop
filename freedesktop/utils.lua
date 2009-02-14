@@ -40,6 +40,7 @@ function lookup_icon(icon)
                 table.insert(icon_path, icon_theme_directory .. size .. '/devices/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/places/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/categories/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/status/')
             end
         end
         -- lowest priority fallbacks
