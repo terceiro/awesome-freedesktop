@@ -115,7 +115,7 @@ for i, program in ipairs(utils.parse('/usr/share/applications/'))    do
                 root_menu[target_category] = {}
             end
 
-            table.insert(root_menu[target_category], { program.name, cmdline, program.icon })
+            table.insert(root_menu[target_category], { program.name, program.cmdline, program.icon })
         end
     end
 
