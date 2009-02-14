@@ -92,46 +92,46 @@ synonims["Database"] = "Office"
 known["Accessories"] = true
 synonims["Utility"] = "Accessories"
 
-for i, program in ipairs(utils.parse('/usr/share/applications/'))  do
+for i, program in ipairs(utils.parse('/usr/share/applications/'))    do
 
-  -- check whether to include in the menu
-  if program.show and program.name and program.cmdline then
-    local target_category = nil
-    if program.categories then
-      for category in string.gfind(program.categories, '[^;]+') do
-        if known[category] then
-          target_category = category
+    -- check whether to include in the menu
+    if program.show and program.name and program.cmdline then
+        local target_category = nil
+        if program.categories then
+            for category in string.gfind(program.categories, '[^;]+') do
+                if known[category] then
+                    target_category = category
+                else
+                    if synonims[category] then
+                        target_category = synonims[category]
+                    end
+                end
+            end
         else
-          if synonims[category] then
-            target_category = synonims[category]
-          end
+            target_category = 'Other'
         end
-      end
-    else
-      target_category = 'Other'
-    end
-    if known[target_category] then
-      if not root_menu[target_category] then
-        root_menu[target_category] = {}
-      end
+        if known[target_category] then
+            if not root_menu[target_category] then
+                root_menu[target_category] = {}
+            end
 
-      table.insert(root_menu[target_category], { program.name, cmdline, program.icon })
+            table.insert(root_menu[target_category], { program.name, cmdline, program.icon })
+        end
     end
-  end
 
 end
 
 root_menu = {
-  { "Accessories", root_menu["Accessories"], '/usr/share/icons/gnome/16x16/categories/applications-accessories.png' },
-  { "Development", root_menu["Development"], '/usr/share/icons/gnome/16x16/categories/applications-development.png' },
-  { "Education", root_menu["Education"], '/usr/share/icons/gnome/16x16/categories/applications-science.png' },
-  { "Games", root_menu["Games"], '/usr/share/icons/gnome/16x16/categories/applications-games.png' },
-  { "Graphics", root_menu["Graphics"], '/usr/share/icons/gnome/16x16/categories/applications-graphics.png' },
-  { "Internet", root_menu["Internet"], '/usr/share/icons/gnome/16x16/categories/applications-internet.png' },
-  { "Multimedia", root_menu["Multimedia"], '/usr/share/icons/gnome/16x16/categories/applications-multimedia.png' },
-  { "Office", root_menu["Office"], '/usr/share/icons/gnome/16x16/categories/applications-office.png' },
-  { "Other", root_menu["Other"], '/usr/share/icons/gnome/16x16/categories/applications-other.png' },
-  { "Settings", root_menu["Settings"], '/usr/share/icons/gnome/16x16/categories/applications-utilities.png' },
-  { "System Tools", root_menu["System-Tools"], '/usr/share/icons/gnome/16x16/categories/applications-system.png' },
+    { "Accessories", root_menu["Accessories"], '/usr/share/icons/gnome/16x16/categories/applications-accessories.png' },
+    { "Development", root_menu["Development"], '/usr/share/icons/gnome/16x16/categories/applications-development.png' },
+    { "Education", root_menu["Education"], '/usr/share/icons/gnome/16x16/categories/applications-science.png' },
+    { "Games", root_menu["Games"], '/usr/share/icons/gnome/16x16/categories/applications-games.png' },
+    { "Graphics", root_menu["Graphics"], '/usr/share/icons/gnome/16x16/categories/applications-graphics.png' },
+    { "Internet", root_menu["Internet"], '/usr/share/icons/gnome/16x16/categories/applications-internet.png' },
+    { "Multimedia", root_menu["Multimedia"], '/usr/share/icons/gnome/16x16/categories/applications-multimedia.png' },
+    { "Office", root_menu["Office"], '/usr/share/icons/gnome/16x16/categories/applications-office.png' },
+    { "Other", root_menu["Other"], '/usr/share/icons/gnome/16x16/categories/applications-other.png' },
+    { "Settings", root_menu["Settings"], '/usr/share/icons/gnome/16x16/categories/applications-utilities.png' },
+    { "System Tools", root_menu["System-Tools"], '/usr/share/icons/gnome/16x16/categories/applications-system.png' },
 }
 
