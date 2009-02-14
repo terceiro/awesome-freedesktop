@@ -9,21 +9,49 @@ module("freedesktop.utils", package.seeall)
 
 terminal = 'xterm'
 
+icon_theme = nil
+
+function file_exists(filename)
+    local file = io.open(filename, 'r')
+    local result = (file ~= nil)
+    if result then
+        file:close()
+    end
+    return result
+end
+
 function lookup_icon(icon)
     if string.sub(icon, 1, 1) == '/' and (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
         return icon
     else
-        if (os.execute('test -f /usr/share/pixmaps/' .. icon) == 0) and (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) then
-            return '/usr/share/pixmaps/' .. icon
-        elseif os.execute('test -f /usr/share/pixmaps/' .. icon .. '.png') == 0 then
-            return '/usr/share/pixmaps/' .. icon .. '.png'
-        elseif os.execute('test -f /usr/share/pixmaps/' .. icon .. '.xpm') == 0 then
-            return '/usr/share/pixmaps/' .. icon .. '.xpm'
+        local icon_path = {}
+        local icon_theme_paths = {}
+        if icon_theme then
+            table.insert(icon_theme_paths, '/usr/share/icons/' .. icon_theme .. '/')
+            -- TODO also look in parent icon themes, as in freedesktop.org specification
         end
-        -- TODO: icons without absolute path and not present in
-        -- /usr/share/pixmaps must be looked up according to freedesktop icon
-        -- theme specification (?)
+        table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
+
+        for i, icon_theme_directory in ipairs(icon_theme_paths) do
+            for j, size in ipairs({ '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }) do
+                table.insert(icon_path, icon_theme_directory .. size .. '/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/apps/')
+            end
+        end
+        -- lowest priority fallbacks
+        table.insert(icon_path,  '/usr/share/pixmaps/')
+        table.insert(icon_path,  '/usr/share/icons/')
+
+        for i, directory in ipairs(icon_path) do
+            if (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) and file_exists(directory .. icon) then
+                return directory .. icon
+            elseif file_exists(directory .. icon .. '.png') then
+                return directory .. icon .. '.png'
+            elseif file_exists(directory .. icon .. '.xpm') then
+                return directory .. icon .. '.xpm'
+            end
+        end
     end
 end
 
