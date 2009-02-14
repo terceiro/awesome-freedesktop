@@ -122,16 +122,16 @@ for i, program in ipairs(utils.parse('/usr/share/applications/'))    do
 end
 
 root_menu = {
-    { "Accessories", root_menu["Accessories"], freedesktop.utils.lookup_icon('categories/applications-accessories.png') },
-    { "Development", root_menu["Development"], freedesktop.utils.lookup_icon('categories/applications-development.png') },
-    { "Education", root_menu["Education"], freedesktop.utils.lookup_icon('categories/applications-science.png') },
-    { "Games", root_menu["Games"], freedesktop.utils.lookup_icon('categories/applications-games.png') },
-    { "Graphics", root_menu["Graphics"], freedesktop.utils.lookup_icon('categories/applications-graphics.png') },
-    { "Internet", root_menu["Internet"], freedesktop.utils.lookup_icon('categories/applications-internet.png') },
-    { "Multimedia", root_menu["Multimedia"], freedesktop.utils.lookup_icon('categories/applications-multimedia.png') },
-    { "Office", root_menu["Office"], freedesktop.utils.lookup_icon('categories/applications-office.png') },
-    { "Other", root_menu["Other"], freedesktop.utils.lookup_icon('categories/applications-other.png') },
-    { "Settings", root_menu["Settings"], freedesktop.utils.lookup_icon('categories/applications-utilities.png') },
-    { "System Tools", root_menu["System-Tools"], freedesktop.utils.lookup_icon('categories/applications-system.png') },
+    { "Accessories", root_menu["Accessories"], freedesktop.utils.lookup_icon('applications-accessories.png') },
+    { "Development", root_menu["Development"], freedesktop.utils.lookup_icon('applications-development.png') },
+    { "Education", root_menu["Education"], freedesktop.utils.lookup_icon('applications-science.png') },
+    { "Games", root_menu["Games"], freedesktop.utils.lookup_icon('applications-games.png') },
+    { "Graphics", root_menu["Graphics"], freedesktop.utils.lookup_icon('applications-graphics.png') },
+    { "Internet", root_menu["Internet"], freedesktop.utils.lookup_icon('applications-internet.png') },
+    { "Multimedia", root_menu["Multimedia"], freedesktop.utils.lookup_icon('applications-multimedia.png') },
+    { "Office", root_menu["Office"], freedesktop.utils.lookup_icon('applications-office.png') },
+    { "Other", root_menu["Other"], freedesktop.utils.lookup_icon('applications-other.png') },
+    { "Settings", root_menu["Settings"], freedesktop.utils.lookup_icon('applications-utilities.png') },
+    { "System Tools", root_menu["System-Tools"], freedesktop.utils.lookup_icon('applications-system.png') },
 }
 

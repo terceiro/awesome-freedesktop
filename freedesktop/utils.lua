@@ -35,8 +35,11 @@ function lookup_icon(icon)
 
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
             for j, size in ipairs({ '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }) do
-                table.insert(icon_path, icon_theme_directory .. size .. '/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/apps/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/actions/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/devices/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/places/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/categories/')
             end
         end
         -- lowest priority fallbacks
