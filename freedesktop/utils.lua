@@ -7,6 +7,8 @@ local os = os
 
 module("freedesktop.utils", package.seeall)
 
+terminal = 'xterm'
+
 function lookup_icon(icon)
     if string.sub(icon, 1, 1) == '/' and (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
@@ -77,8 +79,7 @@ function parse(dir)
                 cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
             end
             if program.needs_terminal then
-                -- TODO add a parameter for the terminal wanted
-                cmdline = 'xterm -e ' .. cmdline
+                cmdline = terminal .. ' -e ' .. cmdline
             end
             program.cmdline = cmdline
         end
