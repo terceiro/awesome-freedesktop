@@ -29,7 +29,7 @@ function parse(dir)
     local programs = {}
     local files = io.popen('find '..dir..' -maxdepth 1 -name "*.desktop"'):lines()
     for file in files do
-    local program = { show = true, desktop_file = file }
+        local program = { show = true, desktop_file = file }
         for line in io.lines(file) do
 
             -- command line
@@ -69,17 +69,19 @@ function parse(dir)
             end
         end
 
-        local cmdline = string.gsub(program.cmdline, '%%c', program.name)
-        cmdline = string.gsub(cmdline, '%%[fuFU]', '')
-        cmdline = string.gsub(cmdline, '%%k', program.desktop_file)
-        if program.icon then
-            cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
+        if program.cmdline then
+            local cmdline = string.gsub(program.cmdline, '%%c', program.name)
+            cmdline = string.gsub(cmdline, '%%[fuFU]', '')
+            cmdline = string.gsub(cmdline, '%%k', program.desktop_file)
+            if program.icon then
+                cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
+            end
+            if program.needs_terminal then
+                -- TODO add a parameter for the terminal wanted
+                cmdline = 'xterm -e ' .. cmdline
+            end
+            program.cmdline = cmdline
         end
-        if program.needs_terminal then
-            cmdline = 'xterm -e ' .. cmdline
-        end
-
-        program.cmdline = cmdline
 
         table.insert(programs, program)
     end
