@@ -11,6 +11,8 @@ terminal = 'xterm'
 
 icon_theme = nil
 
+all_icon_sizes = { '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }
+
 function file_exists(filename)
     local file = io.open(filename, 'r')
     local result = (file ~= nil)
@@ -20,10 +22,10 @@ function file_exists(filename)
     return result
 end
 
-function lookup_icon(icon)
-    if string.sub(icon, 1, 1) == '/' and (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) then
+function lookup_icon(arg)
+    if string.sub(arg.icon, 1, 1) == '/' and (string.find(arg.icon, '.+%.png') or string.find(arg.icon, '.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
-        return icon
+        return arg.icon
     else
         local icon_path = {}
         local icon_theme_paths = {}
@@ -34,7 +36,7 @@ function lookup_icon(icon)
         table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
 
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
-            for j, size in ipairs({ '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }) do
+            for j, size in ipairs(arg.icon_sizes or all_icon_sizes) do
                 table.insert(icon_path, icon_theme_directory .. size .. '/apps/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/actions/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/devices/')
@@ -48,20 +50,20 @@ function lookup_icon(icon)
         table.insert(icon_path,  '/usr/share/icons/')
 
         for i, directory in ipairs(icon_path) do
-            if (string.find(icon, '.+%.png') or string.find(icon, '.+%.xpm')) and file_exists(directory .. icon) then
-                return directory .. icon
-            elseif file_exists(directory .. icon .. '.png') then
-                return directory .. icon .. '.png'
-            elseif file_exists(directory .. icon .. '.xpm') then
-                return directory .. icon .. '.xpm'
+            if (string.find(arg.icon, '.+%.png') or string.find(arg.icon, '.+%.xpm')) and file_exists(directory .. arg.icon) then
+                return directory .. arg.icon
+            elseif file_exists(directory .. arg.icon .. '.png') then
+                return directory .. arg.icon .. '.png'
+            elseif file_exists(directory .. arg.icon .. '.xpm') then
+                return directory .. arg.icon .. '.xpm'
             end
         end
     end
 end
 
-function parse(dir)
+function parse(arg)
     local programs = {}
-    local files = io.popen('find '..dir..' -maxdepth 1 -name "*.desktop"'):lines()
+    local files = io.popen('find '..arg.dir..' -maxdepth 1 -name "*.desktop"'):lines()
     for file in files do
         local program = { show = true, desktop_file = file }
         for line in io.lines(file) do
@@ -94,7 +96,7 @@ function parse(dir)
             -- detect program icon
             if string.sub(line, 1, 5) == 'Icon=' then
                 local icon = string.sub(line, 6, -1)
-                program.icon = lookup_icon(icon)
+                program.icon = lookup_icon({ icon = icon, icon_sizes = arg.icon_sizes or all_icon_sizes })
             end
 
             -- detect programas that need a terminal
@@ -121,3 +123,5 @@ function parse(dir)
 
     return programs
 end
+
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80

@@ -25,7 +25,7 @@ programs['System'] = {}
 programs['Utility'] = {}
 programs['Other'] = {}
 
-for i, program in ipairs(utils.parse('/usr/share/applications/'))    do
+for i, program in ipairs(utils.parse({ dir = '/usr/share/applications/' })) do
 
     -- check whether to include in the menu
     if program.show and program.name and program.cmdline then
@@ -47,16 +47,17 @@ for i, program in ipairs(utils.parse('/usr/share/applications/'))    do
 end
 
 applications_menu = {
-    { "Accessories", programs["Utility"], freedesktop.utils.lookup_icon('applications-accessories.png') },
-    { "Development", programs["Development"], freedesktop.utils.lookup_icon('applications-development.png') },
-    { "Education", programs["Education"], freedesktop.utils.lookup_icon('applications-science.png') },
-    { "Games", programs["Game"], freedesktop.utils.lookup_icon('applications-games.png') },
-    { "Graphics", programs["Graphics"], freedesktop.utils.lookup_icon('applications-graphics.png') },
-    { "Internet", programs["Network"], freedesktop.utils.lookup_icon('applications-internet.png') },
-    { "Multimedia", programs["AudioVideo"], freedesktop.utils.lookup_icon('applications-multimedia.png') },
-    { "Office", programs["Office"], freedesktop.utils.lookup_icon('applications-office.png') },
-    { "Other", programs["Other"], freedesktop.utils.lookup_icon('applications-other.png') },
-    { "Settings", programs["Settings"], freedesktop.utils.lookup_icon('applications-utilities.png') },
-    { "System Tools", programs["System"], freedesktop.utils.lookup_icon('applications-system.png') },
+    { "Accessories", programs["Utility"], utils.lookup_icon({ icon = 'applications-accessories.png' }) },
+    { "Development", programs["Development"], utils.lookup_icon({ icon = 'applications-development.png' }) },
+    { "Education", programs["Education"], utils.lookup_icon({ icon = 'applications-science.png' }) },
+    { "Games", programs["Game"], utils.lookup_icon({ icon = 'applications-games.png' }) },
+    { "Graphics", programs["Graphics"], utils.lookup_icon({ icon = 'applications-graphics.png' }) },
+    { "Internet", programs["Network"], utils.lookup_icon({ icon = 'applications-internet.png' }) },
+    { "Multimedia", programs["AudioVideo"], utils.lookup_icon({ icon = 'applications-multimedia.png' }) },
+    { "Office", programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
+    { "Other", programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
+    { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'applications-utilities.png' }) },
+    { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
 }
 
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80

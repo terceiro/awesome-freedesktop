@@ -3,62 +3,91 @@ local widget = widget
 local screen = screen
 local image = image
 local button = button
+local table = table
 local awful = require("awful")
 local utils = require("freedesktop.utils")
 
 module("freedesktop.desktop", package.seeall)
 
 local current_pos = {} 
-local iconsize = {width = 150, height = 30}
+local iconsize = { width = 48, height = 48 }
+local labelsize = { width = 100, height = 20 }
+local margin = { x = 20, y = 20 }
 
 function add_icon(settings) 
 
     local s = settings.screen
 
     if not current_pos[s] then
-        current_pos[s] = { x = (screen[s].geometry.width - iconsize.width - 20), y = 40 }
+        current_pos[s] = { x = (screen[s].geometry.width - iconsize.width - margin.x), y = 40 }
     end
 
-    caption = widget({ type = "textbox", align = "right" })
-    caption.text = settings.label .. " "
-    caption:buttons({
-        button({ }, 1, settings.click) 
-    })
+    local totheight = (settings.icon and iconsize.height or 0) + (settings.label and labelsize.height or 0)
+    if totheight == 0 then return end
 
-    icon = nil
-    if settings.icon then
-        icon = widget({ type = "imagebox", align = "right" })
-        icon.image = image(settings.icon)
-        icon:buttons({
+    if current_pos[s].y + totheight > screen[s].geometry.height - 40 then
+        current_pos[s].x = current_pos[s].x - labelsize.width - iconsize.width - margin.x
+        current_pos[s].y = 40
+    end
+
+    if (settings.icon) then
+        icon = awful.widget.button({ image = settings.icon })
+        local newbuttons = icon:buttons()
+        table.insert(newbuttons, button({}, 1, nil, settings.click));
+        icon:buttons(newbuttons)
+
+        icon_container = wibox({ position = "floating", screen = s, bg = "#00000000" })
+        icon_container.widgets = { icon }
+        icon_container:geometry({
+            width = iconsize.width, 
+            height = iconsize.height, 
+            y = current_pos[s].y, 
+            x = current_pos[s].x
+        }) 
+        icon_container.screen = s
+
+        current_pos[s].y = current_pos[s].y + iconsize.height + 5 
+    end
+    
+    if (settings.label) then
+        caption = widget({ type="textbox", align="right" })
+        caption.text = settings.label
+        caption:buttons({
             button({ }, 1, settings.click) 
         })
+
+        caption_container = wibox({ position = "floating", screen = s, bg = "#00000000" })
+        caption_container.widgets = { caption }
+        caption_container:geometry({
+            width = labelsize.width, 
+            height = labelsize.height,
+            y = current_pos[s].y, 
+            x = current_pos[s].x - labelsize.width + iconsize.width
+        }) 
+        caption_container.screen = s
     end
 
-    desktop = wibox({ position = "floating", screen = s })
-    desktop.widgets = {
-                    caption,
-                    icon
-    }
-
-    desktop:geometry({
-        width = iconsize.width, height = iconsize.height, 
-        y = current_pos[s].y, x = current_pos[s].x 
-    }) 
-
-    current_pos[s].y = current_pos[s].y + iconsize.height + 20
-    desktop.screen = s
+    current_pos[s].y = current_pos[s].y + labelsize.height + margin.y
 end
 
-function add_desktop_icons(screen)
-    for i, program in ipairs(utils.parse('~/Desktop')) do
+function add_desktop_icons(arg)
+    for i, program in ipairs(utils.parse({ 
+        dir = '~/Desktop',
+        icon_sizes = { 
+            iconsize.width .. "x" .. iconsize.height, 
+            "128x128", "96x96", "72x72", "64x64", "48x48", 
+            "36x36", "32x32", "24x24", "22x22", "16x6" 
+        }
+    })) do
         if program.show then
             add_icon({
-                label = program.name,
+                label = arg.showlabels and program.name or nil,
                 icon = program.icon,
-                screen = screen,
+                screen = arg.screen,
                 click = function () awful.util.spawn(program.cmdline) end
             })
         end
     end
 end
 
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
