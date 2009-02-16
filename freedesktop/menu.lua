@@ -60,4 +60,3 @@ applications_menu = {
     { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
 }
 
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
