@@ -7,7 +7,7 @@ local table = table
 local awful = require("awful")
 local utils = require("freedesktop.utils")
 
-module("freedesktop.desktop", package.seeall)
+module("freedesktop.desktop")
 
 local current_pos = {}
 local iconsize = { width = 48, height = 48 }

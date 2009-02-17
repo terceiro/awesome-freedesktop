@@ -5,7 +5,7 @@ local ipairs = ipairs
 local table = table
 local os = os
 
-module("freedesktop.menu", package.seeall)
+module("freedesktop.menu")
 
 -- the categories and their synonyms where shamelessly copied from lxpanel
 -- source code.

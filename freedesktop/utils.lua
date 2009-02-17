@@ -2,9 +2,9 @@
 
 local io = io
 local table = table
-local os = os
+local ipairs = ipairs
 
-module("freedesktop.utils", package.seeall)
+module("freedesktop.utils")
 
 terminal = 'xterm'
 
