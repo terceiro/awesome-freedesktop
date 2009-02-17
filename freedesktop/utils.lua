@@ -1,7 +1,6 @@
 -- Grab environment
 
 local io = io
-local string = string
 local table = table
 local os = os
 
@@ -23,7 +22,7 @@ local function file_exists(filename)
 end
 
 function lookup_icon(arg)
-    if string.sub(arg.icon, 1, 1) == '/' and (string.find(arg.icon, '.+%.png') or string.find(arg.icon, '.+%.xpm')) then
+    if arg.icon:sub(1, 1) == '/' and (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
         return arg.icon
     else
@@ -50,7 +49,7 @@ function lookup_icon(arg)
         table.insert(icon_path,  '/usr/share/icons/')
 
         for i, directory in ipairs(icon_path) do
-            if (string.find(arg.icon, '.+%.png') or string.find(arg.icon, '.+%.xpm')) and file_exists(directory .. arg.icon) then
+            if (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) and file_exists(directory .. arg.icon) then
                 return directory .. arg.icon
             elseif file_exists(directory .. arg.icon .. '.png') then
                 return directory .. arg.icon .. '.png'
