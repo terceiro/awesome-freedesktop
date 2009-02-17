@@ -78,7 +78,7 @@ function add_desktop_icons(arg)
         if program.show then
             add_icon({
                 label = arg.showlabels and program.name or nil,
-                icon = program.icon,
+                icon = program.icon_path,
                 screen = arg.screen,
                 click = function () awful.util.spawn(program.cmdline) end
             })

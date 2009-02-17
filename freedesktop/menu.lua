@@ -28,10 +28,10 @@ programs['Other'] = {}
 for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
 
     -- check whether to include in the menu
-    if program.show and program.name and program.cmdline then
+    if program.show and program.Name and program.cmdline then
         local target_category = nil
-        if program.categories then
-            for category in string.gfind(program.categories, '[^;]+') do
+        if program.Categories then
+            for category in string.gfind(program.Categories, '[^;]+') do
                 if programs[category] then
                     target_category = category
                 end
@@ -40,7 +40,7 @@ for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
             target_category = 'Other'
         end
         if target_category then
-            table.insert(programs[target_category], { program.name, program.cmdline, program.icon })
+            table.insert(programs[target_category], { program.Name, program.cmdline, program.icon })
         end
     end
 

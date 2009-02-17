@@ -68,51 +68,30 @@ end
 function parse(file, icons_sizes)
     local program = { show = true, file = file }
     for line in io.lines(file) do
-        -- command line
-        if string.sub(line, 1, 5) == 'Exec=' then
-            program.exec = string.sub(line, 6, -1)
-        end
-
-        -- categories
-        if string.sub(line, 1, 11) == 'Categories=' then
-            program.categories = string.sub(line, 12, -1)
-        end
-
-        -- program name
-        if string.sub(line, 1, 5) == 'Name=' then
-            program.name = string.sub(line, 6, -1)
-        end
-
-        -- wheter to show the program or not
-        if string.sub(line, 1, 11) == 'OnlyShowIn=' then
-            program.show = false
-            for desktop in string.gfind(line, '[^;]+') do
-                if string.lower(desktop) == 'awesome' then
-                    program.show = true
-                end
-            end
-        end
-
-        -- detect program icon
-        if string.sub(line, 1, 5) == 'Icon=' then
-            local icon = string.sub(line, 6, -1)
-            program.icon = lookup_icon({ icon = icon, icon_sizes = icon_sizes or all_icon_sizes })
-        end
-
-        -- detect programas that need a terminal
-        if line == 'Terminal=true' then
-            program.needs_terminal = true
+        for key, value in line:gmatch("(%w+)=(.+)") do
+            program[key] = value
         end
     end
 
-    if program.exec then
-        local cmdline = string.gsub(program.exec, '%%c', program.name)
-        cmdline = string.gsub(cmdline, '%%[fuFU]', '')
-        cmdline = string.gsub(cmdline, '%%k', program.file)
-        if program.icon then
-            cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
+    -- Only show the program if there is not OnlyShowIn attribute
+    -- or if it's equal to 'awesome'
+    if program.OnlyShowIn ~= nil and program.OnlyShowIn ~= "awesome" then
+        program.show = false
+    end
+
+    -- Look up for a icon.
+    if program.Icon then
+        program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = all_icon_sizes })
+    end
+
+    if program.Exec then
+        local cmdline = program.Exec:gsub('%%c', program.Name)
+        cmdline = cmdline:gsub('%%[fuFU]', '')
+        cmdline = cmdline:gsub('%%k', program.file)
+        if program.icon_path then
+            cmdline = cmdline:gsub('%%i', '--icon ' .. program.icon_path)
         end
-        if program.needs_terminal then
+        if program.Terminal == "true" then
             cmdline = terminal .. ' -e ' .. cmdline
         end
         program.cmdline = cmdline
