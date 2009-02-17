@@ -25,7 +25,7 @@ programs['System'] = {}
 programs['Utility'] = {}
 programs['Other'] = {}
 
-for i, program in ipairs(utils.parse({ dir = '/usr/share/applications/' })) do
+for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
 
     -- check whether to include in the menu
     if program.show and program.name and program.cmdline then

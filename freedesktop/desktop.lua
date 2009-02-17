@@ -71,14 +71,10 @@ function add_icon(settings)
 end
 
 function add_desktop_icons(arg)
-    for i, program in ipairs(utils.parse({
-        dir = '~/Desktop',
-        icon_sizes = {
-            iconsize.width .. "x" .. iconsize.height,
-            "128x128", "96x96", "72x72", "64x64", "48x48",
-            "36x36", "32x32", "24x24", "22x22", "16x6"
-        }
-    })) do
+    for i, program in ipairs(utils.parse_dir('~/Desktop',
+        iconsize.width .. "x" .. iconsize.height,
+        "128x128", "96x96", "72x72", "64x64", "48x48",
+        "36x36", "32x32", "24x24", "22x22", "16x16")) do
         if program.show then
             add_icon({
                 label = arg.showlabels and program.name or nil,

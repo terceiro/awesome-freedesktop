@@ -13,7 +13,7 @@ icon_theme = nil
 
 all_icon_sizes = { '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }
 
-function file_exists(filename)
+local function file_exists(filename)
     local file = io.open(filename, 'r')
     local result = (file ~= nil)
     if result then
@@ -61,66 +61,75 @@ function lookup_icon(arg)
     end
 end
 
-function parse(arg)
-    local programs = {}
-    local files = io.popen('find '..arg.dir..' -maxdepth 1 -name "*.desktop"'):lines()
-    for file in files do
-        local program = { show = true, desktop_file = file }
-        for line in io.lines(file) do
+--- Parse a .desktop file
+-- @param file The .desktop file
+-- @param icons_size, The icons sizes, optional.
+-- @return A table with file entries.
+function parse(file, icons_sizes)
+    local program = { show = true, file = file }
+    for line in io.lines(file) do
+        -- command line
+        if string.sub(line, 1, 5) == 'Exec=' then
+            program.exec = string.sub(line, 6, -1)
+        end
 
-            -- command line
-            if string.sub(line, 1, 5) == 'Exec=' then
-                program.cmdline = string.sub(line, 6, -1)
-            end
+        -- categories
+        if string.sub(line, 1, 11) == 'Categories=' then
+            program.categories = string.sub(line, 12, -1)
+        end
 
-            -- categories
-            if string.sub(line, 1, 11) == 'Categories=' then
-                program.categories = string.sub(line, 12, -1)
-            end
+        -- program name
+        if string.sub(line, 1, 5) == 'Name=' then
+            program.name = string.sub(line, 6, -1)
+        end
 
-            -- program name
-            if string.sub(line, 1, 5) == 'Name=' then
-                program.name = string.sub(line, 6, -1)
-            end
-
-            -- wheter to show the program or not
-            if string.sub(line, 1, 11) == 'OnlyShowIn=' then
-                program.show = false
-                for desktop in string.gfind(line, '[^;]+') do
-                    if string.lower(desktop) == 'awesome' then
-                        program.show = true
-                    end
+        -- wheter to show the program or not
+        if string.sub(line, 1, 11) == 'OnlyShowIn=' then
+            program.show = false
+            for desktop in string.gfind(line, '[^;]+') do
+                if string.lower(desktop) == 'awesome' then
+                    program.show = true
                 end
             end
-
-            -- detect program icon
-            if string.sub(line, 1, 5) == 'Icon=' then
-                local icon = string.sub(line, 6, -1)
-                program.icon = lookup_icon({ icon = icon, icon_sizes = arg.icon_sizes or all_icon_sizes })
-            end
-
-            -- detect programas that need a terminal
-            if line == 'Terminal=true' then
-                program.needs_terminal = true
-            end
         end
 
-        if program.cmdline then
-            local cmdline = string.gsub(program.cmdline, '%%c', program.name)
-            cmdline = string.gsub(cmdline, '%%[fuFU]', '')
-            cmdline = string.gsub(cmdline, '%%k', program.desktop_file)
-            if program.icon then
-                cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
-            end
-            if program.needs_terminal then
-                cmdline = terminal .. ' -e ' .. cmdline
-            end
-            program.cmdline = cmdline
+        -- detect program icon
+        if string.sub(line, 1, 5) == 'Icon=' then
+            local icon = string.sub(line, 6, -1)
+            program.icon = lookup_icon({ icon = icon, icon_sizes = icon_sizes or all_icon_sizes })
         end
 
-        table.insert(programs, program)
+        -- detect programas that need a terminal
+        if line == 'Terminal=true' then
+            program.needs_terminal = true
+        end
     end
 
-    return programs
+    if program.exec then
+        local cmdline = string.gsub(program.exec, '%%c', program.name)
+        cmdline = string.gsub(cmdline, '%%[fuFU]', '')
+        cmdline = string.gsub(cmdline, '%%k', program.file)
+        if program.icon then
+            cmdline = string.gsub(cmdline, '%%i', '--icon ' .. program.icon)
+        end
+        if program.needs_terminal then
+            cmdline = terminal .. ' -e ' .. cmdline
+        end
+        program.cmdline = cmdline
+    end
+
+    return program
 end
 
+--- Parse a directory with .desktop files
+-- @param dir The directory.
+-- @param icons_size, The icons sizes, optional.
+-- @return A table with all .desktop entries.
+function parse_dir(dir, icon_sizes)
+    local programs = {}
+    local files = io.popen('find '.. dir ..' -maxdepth 1 -name "*.desktop"'):lines()
+    for file in files do
+        table.insert(programs, parse(file, icon_sizes))
+    end
+    return programs
+end
