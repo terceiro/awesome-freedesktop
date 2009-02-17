@@ -7,7 +7,7 @@ local os = os
 
 module("freedesktop.menu", package.seeall)
 
--- the categories and their synonims where shamelessly copied from lxpanel
+-- the categories and their synonyms where shamelessly copied from lxpanel
 -- source code.
 
 programs = {}
