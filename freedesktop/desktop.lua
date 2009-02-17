@@ -4,6 +4,7 @@ local screen = screen
 local image = image
 local button = button
 local table = table
+local ipairs = ipairs
 local awful = require("awful")
 local utils = require("freedesktop.utils")
 
