@@ -83,6 +83,14 @@ function parse(file, icons_sizes)
         program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = all_icon_sizes })
     end
 
+    -- Split categories into a table.
+    if program.Categories then
+        program.categories = {}
+        for category in program.Categories:gfind('[^;]+') do
+            table.insert(program.categories, category)
+        end
+    end
+
     if program.Exec then
         local cmdline = program.Exec:gsub('%%c', program.Name)
         cmdline = cmdline:gsub('%%[fuFU]', '')

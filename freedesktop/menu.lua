@@ -1,7 +1,7 @@
 -- Grab environment
 local utils = require("freedesktop.utils")
 local io = io
-local string = string
+local ipairs = ipairs
 local table = table
 local os = os
 
@@ -30,10 +30,11 @@ for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
     -- check whether to include in the menu
     if program.show and program.Name and program.cmdline then
         local target_category = nil
-        if program.Categories then
-            for category in string.gfind(program.Categories, '[^;]+') do
+        if program.categories then
+            for _, category in ipairs(program.categories) do
                 if programs[category] then
                     target_category = category
+                    break
                 end
             end
         else
@@ -59,4 +60,3 @@ applications_menu = {
     { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'applications-utilities.png' }) },
     { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
 }
-
