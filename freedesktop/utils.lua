@@ -62,9 +62,9 @@ end
 
 --- Parse a .desktop file
 -- @param file The .desktop file
--- @param icons_size, The icons sizes, optional.
+-- @param requested_icon_sizes A list of icon sizes (optional). If this list is given, it will be used as a priority list for icon sizes when looking up for icons. If you want large icons, for example, you can put '128x128' as the first item in the list.
 -- @return A table with file entries.
-function parse(file, icons_sizes)
+function parse(file, requested_icon_sizes)
     local program = { show = true, file = file }
     for line in io.lines(file) do
         for key, value in line:gmatch("(%w+)=(.+)") do
@@ -80,7 +80,7 @@ function parse(file, icons_sizes)
 
     -- Look up for a icon.
     if program.Icon then
-        program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = all_icon_sizes })
+        program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = (requested_icon_sizes or all_icon_sizes) })
     end
 
     -- Split categories into a table.

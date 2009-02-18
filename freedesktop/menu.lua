@@ -41,7 +41,7 @@ for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
             target_category = 'Other'
         end
         if target_category then
-            table.insert(programs[target_category], { program.Name, program.cmdline, program.icon })
+            table.insert(programs[target_category], { program.Name, program.cmdline, program.icon_path })
         end
     end
 
