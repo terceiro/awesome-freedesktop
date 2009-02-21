@@ -1,13 +1,13 @@
 -- Grab environment
 local utils = require("freedesktop.utils")
 local io = io
-local ipairs = ipairs
+local string = string
 local table = table
 local os = os
 
-module("freedesktop.menu")
+module("freedesktop.menu", package.seeall)
 
--- the categories and their synonyms where shamelessly copied from lxpanel
+-- the categories and their synonims where shamelessly copied from lxpanel
 -- source code.
 
 programs = {}
@@ -25,7 +25,7 @@ programs['System'] = {}
 programs['Utility'] = {}
 programs['Other'] = {}
 
-for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
+for i, program in ipairs(utils.parse_desktop_files({ dir = '/usr/share/applications/' })) do
 
     -- check whether to include in the menu
     if program.show and program.Name and program.cmdline then
@@ -48,15 +48,16 @@ for i, program in ipairs(utils.parse_dir('/usr/share/applications/')) do
 end
 
 applications_menu = {
-    { "Accessories", programs["Utility"], utils.lookup_icon({ icon = 'applications-accessories.png' }) },
-    { "Development", programs["Development"], utils.lookup_icon({ icon = 'applications-development.png' }) },
-    { "Education", programs["Education"], utils.lookup_icon({ icon = 'applications-science.png' }) },
-    { "Games", programs["Game"], utils.lookup_icon({ icon = 'applications-games.png' }) },
-    { "Graphics", programs["Graphics"], utils.lookup_icon({ icon = 'applications-graphics.png' }) },
-    { "Internet", programs["Network"], utils.lookup_icon({ icon = 'applications-internet.png' }) },
-    { "Multimedia", programs["AudioVideo"], utils.lookup_icon({ icon = 'applications-multimedia.png' }) },
-    { "Office", programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
-    { "Other", programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
-    { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'applications-utilities.png' }) },
-    { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
+    { "Accessories", programs["Utility"], utils.lookup_application_icon({ icon = 'applications-accessories.png' }) },
+    { "Development", programs["Development"], utils.lookup_application_icon({ icon = 'applications-development.png' }) },
+    { "Education", programs["Education"], utils.lookup_application_icon({ icon = 'applications-science.png' }) },
+    { "Games", programs["Game"], utils.lookup_application_icon({ icon = 'applications-games.png' }) },
+    { "Graphics", programs["Graphics"], utils.lookup_application_icon({ icon = 'applications-graphics.png' }) },
+    { "Internet", programs["Network"], utils.lookup_application_icon({ icon = 'applications-internet.png' }) },
+    { "Multimedia", programs["AudioVideo"], utils.lookup_application_icon({ icon = 'applications-multimedia.png' }) },
+    { "Office", programs["Office"], utils.lookup_application_icon({ icon = 'applications-office.png' }) },
+    { "Other", programs["Other"], utils.lookup_application_icon({ icon = 'applications-other.png' }) },
+    { "Settings", programs["Settings"], utils.lookup_application_icon({ icon = 'applications-utilities.png' }) },
+    { "System Tools", programs["System"], utils.lookup_application_icon({ icon = 'applications-system.png' }) },
 }
+

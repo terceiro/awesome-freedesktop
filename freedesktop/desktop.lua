@@ -12,7 +12,7 @@ module("freedesktop.desktop")
 
 local current_pos = {}
 local iconsize = { width = 48, height = 48 }
-local labelsize = { width = 100, height = 20 }
+local labelsize = { width = 130, height = 20 }
 local margin = { x = 20, y = 20 }
 
 function add_icon(settings)
@@ -51,7 +51,8 @@ function add_icon(settings)
     end
 
     if (settings.label) then
-        caption = widget({ type="textbox", align="right" })
+        caption = widget({ type="textbox", align="right", width=labelsize.width })
+	caption.ellipsize = "middle" 
         caption.text = settings.label
         caption:buttons({
             button({ }, 1, settings.click)
@@ -71,17 +72,49 @@ function add_icon(settings)
     current_pos[s].y = current_pos[s].y + labelsize.height + margin.y
 end
 
-function add_desktop_icons(arg)
-    for i, program in ipairs(utils.parse_dir('~/Desktop',
-        { iconsize.width .. "x" .. iconsize.height,
-        "128x128", "96x96", "72x72", "64x64", "48x48",
-        "36x36", "32x32", "24x24", "22x22", "16x16" })) do
+--- Adds subdirs and files icons to the desktop
+-- @param dir The directory to parse, (default is ~/Desktop)
+-- @param showlabels Shows icon captions (default is false)
+function add_applications_icon(arg)
+    for i, program in ipairs(utils.parse_desktop_files({
+        dir = arg.dir or '~/Desktop/',
+        icon_sizes = {
+            iconsize.width .. "x" .. iconsize.height,
+            "128x128", "96x96", "72x72", "64x64", "48x48",
+            "36x36", "32x32", "24x24", "22x22", "16x6"
+        }
+    })) do
         if program.show then
             add_icon({
                 label = arg.showlabels and program.Name or nil,
                 icon = program.icon_path,
                 screen = arg.screen,
                 click = function () awful.util.spawn(program.cmdline) end
+            })
+        end
+    end
+end
+
+--- Adds subdirs and files icons to the desktop
+-- @param dir The directory to parse
+-- @param showlabels Shows icon captions
+-- @param open_with The program to use to open clicked files and dirs (i.e. xdg_open, thunar, etc.)
+function add_dirs_and_files_icon(arg)
+    arg.open_with = arg.open_width or 'thunar'
+    for i, file in ipairs(utils.parse_dirs_and_files({
+        dir = arg.dir or '~/Desktop/',
+        icon_sizes = {
+            iconsize.width .. "x" .. iconsize.height,
+            "128x128", "96x96", "72x72", "64x64", "48x48",
+            "36x36", "32x32", "24x24", "22x22", "16x6"
+        }
+    })) do
+        if file.show then
+            add_icon({
+                label = arg.showlabels and file.filename or nil,
+                icon = file.icon,
+                screen = arg.screen,
+                click = function () awful.util.spawn(arg.open_with .. ' ' .. file.path) end
             })
         end
     end
