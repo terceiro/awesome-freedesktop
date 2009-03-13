@@ -1,0 +1,5 @@
+freedesktop/desktop.lua:
+
+  * don't hardcode thunar; add a setting for that instead (an option is e.g. xdg-open)
+
+
