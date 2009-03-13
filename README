@@ -32,13 +32,13 @@ You can use the frerdesktop module in your awesome configuration
   menu_items = freedesktop.menu.applications_menu
   myawesomemenu = {
      { "manual", terminal .. " -e man awesome", freedesktop.utils.lookup_icon({ icon = 'help' }) },
-     { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua", freedesktop.utils.lookup_application_icon({ icon = 'package_settings' }) },
-     { "restart", awesome.restart, freedesktop.utils.lookup_application_icon({ icon = 'gtk-refresh' }) },
-     { "quit", awesome.quit, freedesktop.utils.lookup_application_icon({ icon = 'gtk-quit' }) }
+     { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua", freedesktop.utils.lookup_icon({ icon = 'package_settings' }) },
+     { "restart", awesome.restart, freedesktop.utils.lookup_icon({ icon = 'gtk-refresh' }) },
+     { "quit", awesome.quit, freedesktop.utils.lookup_icon({ icon = 'gtk-quit' }) }
   }
   table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
-  table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_application_icon({icon = 'terminal'}) })
-  table.insert(menu_items, { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_application_icon({ icon = 'debian-logo' }) })
+  table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
+  table.insert(menu_items, { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) })
 
   mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
 

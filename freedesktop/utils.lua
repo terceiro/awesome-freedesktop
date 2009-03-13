@@ -3,6 +3,7 @@
 local io = io
 local table = table
 local ipairs = ipairs
+local pairs = pairs
 
 module("freedesktop.utils")
 
@@ -23,7 +24,7 @@ function file_exists(filename)
     return result
 end
 
-function lookup_application_icon(arg)
+function lookup_icon(arg)
     if arg.icon:sub(1, 1) == '/' and (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
         return arg.icon
@@ -44,6 +45,8 @@ function lookup_application_icon(arg)
                 table.insert(icon_path, icon_theme_directory .. size .. '/places/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/categories/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/status/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/places/')
+                table.insert(icon_path, icon_theme_directory .. size .. '/mimetypes/')
             end
         end
         -- lowest priority fallbacks
@@ -62,36 +65,6 @@ function lookup_application_icon(arg)
     end
 end
 
-function lookup_directory_icon(arg)
-    local icon_path = {}
-    local icon_theme_paths = {}
-    if icon_theme then
-        table.insert(icon_theme_paths, '/usr/share/icons/' .. icon_theme .. '/')
-        -- TODO also look in parent icon themes, as in freedesktop.org specification
-    end
-    table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
-
-    for i, icon_theme_directory in ipairs(icon_theme_paths) do
-        for j, size in ipairs(arg.icon_sizes or all_icon_sizes) do
-            table.insert(icon_path, icon_theme_directory .. size .. '/places/')
-        end
-    end
-
-    for i, directory in ipairs(icon_path) do
-        local filepath_png = directory .. arg.type .. '.png'
-        local filepath_xpm = directory .. arg.type .. '.xpm'
-        if (file_exists(filepath_png)) then return filepath_png end
-        if (file_exists(filepath_xpm)) then return filepath_xpm end
-    end
-
-    if type ~= 'folder' then
-        return lookup_directory_icon({ 
-            type = 'folder', 
-            icon_sizes = arg.icon_sizes or all_icon_sizes
-        })
-    end
-end
-
 function lookup_file_icon(arg)
     load_mime_types()
 
@@ -99,47 +72,24 @@ function lookup_file_icon(arg)
     local mime = mime_types[extension] or ''
     local mime_family = mime:match('^%a+') or ''
 
-    local icon_path = {}
-    local icon_theme_paths = {}
-    if icon_theme then
-        table.insert(icon_theme_paths, '/usr/share/icons/' .. icon_theme .. '/')
-        -- TODO also look in parent icon themes, as in freedesktop.org specification
-    end
-    table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
+    -- possible icons in a typical gnome theme (i.e. Tango icons)
+    local possible_filenames = {
+        mime,
+        'gnome-mime-' .. mime,
+        mime_family,
+        'gnome-mime-' .. mime_family,
+        extension
+    }
 
-    for i, icon_theme_directory in ipairs(icon_theme_paths) do
-        for j, size in ipairs(arg.icon_sizes or all_icon_sizes) do
-            table.insert(icon_path, icon_theme_directory .. size .. '/mimetypes/')
-        end
-    end
-
-    for i, directory in ipairs(icon_path) do
-
-        -- possible icons in a typical gnome theme (i.e. Tango icons)
-        local possible_filenames = { 
-            mime,
-            'gnome-mime-' .. mime,
-            mime_family,
-            'gnome-mime-' .. mime_family,
-            extension
-        }
-
-        for i, filename in ipairs(possible_filenames) do
-            local filepath_png = directory .. filename .. '.png'
-            local filepath_xpm = directory .. filename .. '.xpm'
-            if (file_exists(filepath_png)) then return filepath_png end
-            if (file_exists(filepath_xpm)) then return filepath_xpm end
+    for i, filename in ipairs(possible_filenames) do
+        local icon = lookup_icon({icon = filename, icon_sizes = (arg.icon_sizes or all_icon_sizes)})
+        if icon then
+            return icon
         end
     end
 
     -- If we don't find ad icon, then pretend is a plain text file
-    if extension ~= 'txt' then
-        return lookup_file_icon({ 
-            filename = 'dummy.txt', 
-            icon_sizes = arg.icon_sizes or all_icon_sizes
-        })
-    end
-
+    return lookup_icon({ icon = 'txt', icon_sizes = arg.icon_sizes or all_icon_sizes })
 end
 
 --- Load system MIME types
@@ -182,7 +132,7 @@ function parse_desktop_file(arg)
 
     -- Look up for a icon.
     if program.Icon then
-        program.icon_path = lookup_application_icon({ icon = program.Icon, icon_sizes = (arg.icon_sizes or all_icon_sizes) })
+        program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = (arg.icon_sizes or all_icon_sizes) })
     end
 
     -- Split categories into a table.
@@ -236,7 +186,7 @@ function parse_dirs_and_files(arg)
             file.filename = path:match("[^/]+$")
             file.path = path
             file.show = true
-            file.icon = lookup_directory_icon({ type="folder", icon_sizes = arg.icon_sizes or all_icon_sizes })
+            file.icon = lookup_icon({ icon = "folder", icon_sizes = (arg.icon_sizes or all_icon_sizes) })
             table.insert(files, file)
         end
     end
@@ -247,7 +197,7 @@ function parse_dirs_and_files(arg)
             file.filename = path:match("[^/]+$")
             file.path = path
             file.show = true
-            file.icon = lookup_file_icon({ filename = file.filename, icon_sizes = arg.icon_sizes or all_icon_sizes })
+            file.icon = lookup_file_icon({ filename = file.filename, icon_sizes = (arg.icon_sizes or all_icon_sizes) })
             table.insert(files, file)
         end
     end

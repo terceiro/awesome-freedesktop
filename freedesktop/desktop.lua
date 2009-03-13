@@ -75,7 +75,7 @@ end
 --- Adds subdirs and files icons to the desktop
 -- @param dir The directory to parse, (default is ~/Desktop)
 -- @param showlabels Shows icon captions (default is false)
-function add_applications_icon(arg)
+function add_applications_icons(arg)
     for i, program in ipairs(utils.parse_desktop_files({
         dir = arg.dir or '~/Desktop/',
         icon_sizes = {
@@ -99,7 +99,7 @@ end
 -- @param dir The directory to parse
 -- @param showlabels Shows icon captions
 -- @param open_with The program to use to open clicked files and dirs (i.e. xdg_open, thunar, etc.)
-function add_dirs_and_files_icon(arg)
+function add_dirs_and_files_icons(arg)
     arg.open_with = arg.open_width or 'thunar'
     for i, file in ipairs(utils.parse_dirs_and_files({
         dir = arg.dir or '~/Desktop/',
@@ -120,3 +120,7 @@ function add_dirs_and_files_icon(arg)
     end
 end
 
+function add_desktop_icons(args)
+    add_applications_icons(args)
+    add_dirs_and_files_icons(args)
+end
