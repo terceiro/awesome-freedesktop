@@ -11,7 +11,20 @@ terminal = 'xterm'
 
 icon_theme = nil
 
-all_icon_sizes = { '16x16', '22x22', '24x24', '32x32', '36x36', '48x48', '64x64', '72x72', '96x96', '128x128' }
+all_icon_sizes = {
+    '128x128',
+    '96x96',
+    '72x72',
+    '64x64',
+    '48x48',
+    '36x36',
+    '32x32',
+    '24x24',
+    '22x22',
+    '16x16'
+}
+
+icon_sizes = {}
 
 local mime_types = {}
 
@@ -37,8 +50,13 @@ function lookup_icon(arg)
         end
         table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
 
+        local isizes = icon_sizes
+        for i, sz in ipairs(all_icon_sizes) do
+            table.insert(isizes, sz)
+        end
+
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
-            for j, size in ipairs(arg.icon_sizes or all_icon_sizes) do
+            for j, size in ipairs(arg.icon_sizes or isizes) do
                 table.insert(icon_path, icon_theme_directory .. size .. '/apps/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/actions/')
                 table.insert(icon_path, icon_theme_directory .. size .. '/devices/')
