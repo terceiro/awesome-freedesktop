@@ -49,6 +49,6 @@ You can use the frerdesktop module in your awesome configuration
   -- desktop icons
   require('freedesktop.desktop')
   for s = 1, screen.count() do
-	freedesktop.desktop.add_applications_icon({screen = s, showlabels = true})
-	freedesktop.desktop.add_dirs_and_files_icon({screen = s, showlabels = true})
+        freedesktop.desktop.add_applications_icon({screen = s, showlabels = true})
+        freedesktop.desktop.add_dirs_and_files_icon({screen = s, showlabels = true})
   end

@@ -52,7 +52,7 @@ function add_icon(settings)
 
     if (settings.label) then
         caption = widget({ type="textbox", align="right", width=labelsize.width })
-	caption.ellipsize = "middle" 
+        caption.ellipsize = "middle"
         caption.text = settings.label
         caption:buttons({
             button({ }, 1, settings.click)
