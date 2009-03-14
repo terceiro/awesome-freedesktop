@@ -4,8 +4,9 @@ local io = io
 local string = string
 local table = table
 local os = os
+local ipairs = ipairs
 
-module("freedesktop.menu", package.seeall)
+module("freedesktop.menu")
 
 function new()
     -- the categories and their synonyms where shamelessly copied from lxpanel
