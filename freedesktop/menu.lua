@@ -68,6 +68,7 @@ function new()
             table.insert(bad_indexes, index)
         end
     end
+    table.sort(bad_indexes, function (a,b) return a > b end)
     for _, index in ipairs(bad_indexes) do
         table.remove(menu, index)
     end
