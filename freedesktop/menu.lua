@@ -64,7 +64,7 @@ function new()
 
     -- Removing empty entries from menu
     local bad_indexes = {}
-    for index , item in ipairs(menu) do
+    for index, item in ipairs(menu) do
         if not item[2] then
             table.insert(bad_indexes, index)
         end
