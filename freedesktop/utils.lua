@@ -23,6 +23,16 @@ all_icon_sizes = {
     '22x22',
     '16x16'
 }
+all_icon_types = {
+    'apps',
+    'actions',
+    'devices',
+    'places',
+    'categories',
+    'status',
+    'mimetypes'
+}
+all_icon_paths = { '/usr/share/icons/' }
 
 icon_sizes = {}
 
@@ -45,7 +55,9 @@ function lookup_icon(arg)
         local icon_path = {}
         local icon_theme_paths = {}
         if icon_theme then
-            table.insert(icon_theme_paths, '/usr/share/icons/' .. icon_theme .. '/')
+            for i, path in ipairs(all_icon_paths) do
+                table.insert(icon_theme_paths, path .. icon_theme .. '/')
+            end
             -- TODO also look in parent icon themes, as in freedesktop.org specification
         end
         table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
@@ -57,14 +69,9 @@ function lookup_icon(arg)
 
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
             for j, size in ipairs(arg.icon_sizes or isizes) do
-                table.insert(icon_path, icon_theme_directory .. size .. '/apps/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/actions/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/devices/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/places/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/categories/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/status/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/places/')
-                table.insert(icon_path, icon_theme_directory .. size .. '/mimetypes/')
+                for k, icon_type in ipairs(all_icon_types) do
+                    table.insert(icon_path, icon_theme_directory .. size .. '/' .. icon_type .. '/')
+                end
             end
         end
         -- lowest priority fallbacks
