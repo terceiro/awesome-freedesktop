@@ -163,10 +163,12 @@ function parse_desktop_file(arg)
 
     if program.Exec then
         local cmdline = program.Exec:gsub('%%c', program.Name)
-        cmdline = cmdline:gsub('%%[fuFU]', '')
+        cmdline = cmdline:gsub('%%[fmuFMU]', '')
         cmdline = cmdline:gsub('%%k', program.file)
         if program.icon_path then
             cmdline = cmdline:gsub('%%i', '--icon ' .. program.icon_path)
+        else
+            cmdline = cmdline:gsub('%%i', '')
         end
         if program.Terminal == "true" then
             cmdline = terminal .. ' -e ' .. cmdline
