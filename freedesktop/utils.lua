@@ -149,9 +149,10 @@ function parse_desktop_file(arg)
         end
     end
 
+    -- Don't show the program if NoDisplay is true
     -- Only show the program if there is not OnlyShowIn attribute
     -- or if it's equal to 'awesome'
-    if program.OnlyShowIn ~= nil and program.OnlyShowIn ~= "awesome" then
+    if program.NoDisplay == "true" or program.OnlyShowIn ~= nil and program.OnlyShowIn ~= "awesome" then
         program.show = false
     end
 
