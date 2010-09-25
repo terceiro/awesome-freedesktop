@@ -159,6 +159,9 @@ function parse_desktop_file(arg)
     -- Look up for a icon.
     if program.Icon then
         program.icon_path = lookup_icon({ icon = program.Icon, icon_sizes = (arg.icon_sizes or all_icon_sizes) })
+        if program.icon_path ~= nil and not file_exists(program.icon_path) then
+           program.icon_path = nil
+        end
     end
 
     -- Split categories into a table.
