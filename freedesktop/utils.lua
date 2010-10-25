@@ -2,6 +2,7 @@
 
 local io = io
 local table = table
+local type = type
 local ipairs = ipairs
 local pairs = pairs
 
@@ -53,10 +54,16 @@ function lookup_icon(arg)
         return arg.icon
     else
         local icon_path = {}
+        local icon_themes = {}
         local icon_theme_paths = {}
-        if icon_theme then
-            for i, path in ipairs(all_icon_paths) do
-                table.insert(icon_theme_paths, path .. icon_theme .. '/')
+        if icon_theme and type(icon_theme) == 'table' then
+            icon_themes = icon_theme
+        elseif icon_theme then
+            icon_themes = { icon_theme }
+        end
+        for i, theme in ipairs(icon_themes) do
+            for j, path in ipairs(all_icon_paths) do
+                table.insert(icon_theme_paths, path .. theme .. '/')
             end
             -- TODO also look in parent icon themes, as in freedesktop.org specification
         end
