@@ -70,7 +70,7 @@ function new(arg)
         { "Multimedia", programs["AudioVideo"], utils.lookup_icon({ icon = 'applications-multimedia.png' }) },
         { "Office", programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
         { "Other", programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
-        { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'applications-utilities.png' }) },
+        { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'preferences-desktop.png' }) },
         { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
     }
 
