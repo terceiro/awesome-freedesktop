@@ -20,7 +20,9 @@ Usage example
 =============
 
 You can use the frerdesktop module in your awesome configuration
-(~/.config/awesome/rc.lua) like this:
+(~/.config/awesome/rc.lua) like the example below. If you are a Debian user,
+you can also uncomment the two lines that insert the Debian menu together with
+the rest of the items.
 
   -- applications menu
   require('freedesktop.utils')
