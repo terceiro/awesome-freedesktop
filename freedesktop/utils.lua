@@ -39,6 +39,15 @@ icon_sizes = {}
 
 local mime_types = {}
 
+function get_lines(...)
+    local f = io.popen(...)
+    return function () -- iterator
+        local data = f:read()
+        if data == nil then f:close() end
+        return data
+    end
+end
+
 function file_exists(filename)
     local file = io.open(filename, 'r')
     local result = (file ~= nil)
@@ -203,7 +212,7 @@ end
 -- @return A table with all .desktop entries.
 function parse_desktop_files(arg)
     local programs = {}
-    local files = io.popen('find '.. arg.dir ..' -maxdepth 1 -name "*.desktop"'):lines()
+    local files = get_lines('find '.. arg.dir ..' -maxdepth 1 -name "*.desktop"')
     for file in files do
         arg.file = file
         table.insert(programs, parse_desktop_file(arg))
@@ -217,7 +226,7 @@ end
 -- @return A table with all .desktop entries.
 function parse_dirs_and_files(arg)
     local files = {}
-    local paths = io.popen('find '..arg.dir..' -maxdepth 1 -type d'):lines()
+    local paths = get_lines('find '..arg.dir..' -maxdepth 1 -type d')
     for path in paths do
         if path:match("[^/]+$") then
             local file = {}
@@ -228,9 +237,9 @@ function parse_dirs_and_files(arg)
             table.insert(files, file)
         end
     end
-    local paths = io.popen('find '..arg.dir..' -maxdepth 1 -type f'):lines()
+    local paths = get_lines('find '..arg.dir..' -maxdepth 1 -type f')
     for path in paths do
-        if not path:find("\.desktop$") then
+        if not path:find("%.desktop$") then
             local file = {}
             file.filename = path:match("[^/]+$")
             file.path = path
