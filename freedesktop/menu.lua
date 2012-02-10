@@ -9,7 +9,11 @@ local pairs = pairs
 
 module("freedesktop.menu")
 
-all_menu_dirs = { '/usr/share/applications/', '/usr/local/share/applications/' }
+all_menu_dirs = {
+    '/usr/share/applications/',
+    '/usr/local/share/applications/',
+    '~/.local/share/applications/'
+}
 
 show_generic_name = false
 
