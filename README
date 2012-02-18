@@ -75,3 +75,10 @@ the rest of the items.
         freedesktop.desktop.add_applications_icons({screen = s, showlabels = true})
         freedesktop.desktop.add_dirs_and_files_icons({screen = s, showlabels = true})
   end
+
+License
+=======
+
+Copyright © 2009-2011 Antonio Terceiro <terceiro@softwarelivre.org>
+
+This code is licensed under the same terms as Awesome itself.
