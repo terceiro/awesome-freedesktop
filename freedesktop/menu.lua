@@ -5,10 +5,15 @@ local string = string
 local table = table
 local os = os
 local ipairs = ipairs
+local pairs = pairs
 
 module("freedesktop.menu")
 
-all_menu_dirs = { '/usr/share/applications/', '/usr/local/share/applications/' }
+all_menu_dirs = {
+    '/usr/share/applications/',
+    '/usr/local/share/applications/',
+    '~/.local/share/applications/'
+}
 
 show_generic_name = false
 
@@ -58,6 +63,11 @@ function new(arg)
                 end
             end
         end
+    end
+
+    -- sort each submenu alphabetically case insensitive
+    for k, v in pairs(programs) do
+        table.sort(v, function(a, b) return a[1]:lower() < b[1]:lower() end)
     end
 
     local menu = {

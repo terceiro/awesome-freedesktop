@@ -84,6 +84,7 @@ function lookup_icon(arg)
         -- lowest priority fallbacks
         table.insert(icon_path,  '/usr/share/pixmaps/')
         table.insert(icon_path,  '/usr/share/icons/')
+        table.insert(icon_path,  '/usr/share/app-install/icons/')
 
         for i, directory in ipairs(icon_path) do
             if (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) and file_exists(directory .. arg.icon) then
