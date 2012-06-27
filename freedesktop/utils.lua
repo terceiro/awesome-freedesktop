@@ -213,7 +213,7 @@ end
 -- @return A table with all .desktop entries.
 function parse_desktop_files(arg)
     local programs = {}
-    local files = get_lines('find '.. arg.dir ..' -maxdepth 1 -name "*.desktop"')
+    local files = get_lines('find '.. arg.dir ..' -name "*.desktop"')
     for file in files do
         arg.file = file
         table.insert(programs, parse_desktop_file(arg))
