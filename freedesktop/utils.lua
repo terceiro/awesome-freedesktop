@@ -33,7 +33,7 @@ all_icon_types = {
     'status',
     'mimetypes'
 }
-all_icon_paths = { '/usr/share/icons/' }
+all_icon_paths = { os.getenv("HOME") .. '/.icons/', '/usr/share/icons/' }
 
 icon_sizes = {}
 
