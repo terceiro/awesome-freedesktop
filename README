@@ -21,26 +21,26 @@ Icon themes
 
 You can choose any icon theme that's installed in /usr/share/icons/. To define
 your icon theme, you can do the following before you require
-"freedesktop.menu", but after you require "frerdesktop.utils" (see example
+"freedesktop.menu", but after you require "freedesktop.utils" (see example
 usage below):
 
   freedesktop.utils.icon_theme = 'gnome'
 
-You can also use more then one icon theme, by assigning a Lua table containing
+You can also use more than one icon theme, by assigning a Lua table containing
 a list of themes.
 
   freedesktop.utils.icon_theme = { 'Mist', 'gnome' }
 
 When you use a list of icon themes, icons will be looked up in themes list in
 the order you specified. The first theme containing the desired icon will be
-usen (that happens once for each icon). Note that if the icon theme already
+used (that happens once for each icon). Note that if the icon theme already
 specifies another icon theme as fallback, that is already taken care of for
 you.
 
 Usage example
 =============
 
-You can use the frerdesktop module in your awesome configuration
+You can use the freedesktop module in your awesome configuration
 (~/.config/awesome/rc.lua) like the example below. If you are a Debian user,
 you can also uncomment the two lines that insert the Debian menu together with
 the rest of the items.
