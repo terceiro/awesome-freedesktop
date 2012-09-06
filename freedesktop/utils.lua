@@ -1,6 +1,7 @@
 -- Grab environment
 
 local io = io
+local os = os
 local table = table
 local type = type
 local ipairs = ipairs
