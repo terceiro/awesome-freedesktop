@@ -6,24 +6,32 @@ local table = table
 local type = type
 local ipairs = ipairs
 local pairs = pairs
+local string = string
 
 module("freedesktop.utils")
 
-terminal = 'xterm'
+terminal = 'lxterminal'
 
 icon_theme = nil
 
 all_icon_sizes = {
     '128x128',
     '96x96',
+    '96',
     '72x72',
     '64x64',
+    '64',
     '48x48',
+    '48',
     '36x36',
+    '32',
     '32x32',
     '24x24',
+    '24',
     '22x22',
-    '16x16'
+    '22',
+    '16x16',
+    '16'
 }
 all_icon_types = {
     'apps',
@@ -87,7 +95,8 @@ function lookup_icon(arg)
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
             for j, size in ipairs(arg.icon_sizes or isizes) do
                 for k, icon_type in ipairs(all_icon_types) do
-                    table.insert(icon_path, icon_theme_directory .. size .. '/' .. icon_type .. '/')
+                    	table.insert(icon_path, icon_theme_directory .. size .. '/' .. icon_type .. '/')
+			table.insert(icon_path, icon_theme_directory .. icon_type .. '/' .. size .. '/')
                 end
             end
         end
@@ -170,7 +179,8 @@ function parse_desktop_file(arg)
     -- Don't show the program if NoDisplay is true
     -- Only show the program if there is not OnlyShowIn attribute
     -- or if it's equal to 'awesome'
-    if program.NoDisplay == "true" or program.OnlyShowIn ~= nil and program.OnlyShowIn ~= "awesome" then
+    if program.NoDisplay == "true" then
+    --or program.OnlyShowIn ~= nil and ( string.find(program.OnlyShowIn, "awesome") == nil or string.find(program.OnlyShowIn, "LXDE") == nil ) ) then
         program.show = false
     end
 

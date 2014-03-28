@@ -37,6 +37,7 @@ function new(arg)
     programs['System'] = {}
     programs['Utility'] = {}
     programs['Other'] = {}
+    programs['Wine'] = {}
 
     for i, dir in ipairs(config.menu_dirs or all_menu_dirs) do
         local entries = utils.parse_desktop_files({dir = dir})
@@ -49,10 +50,15 @@ function new(arg)
                 local target_category = nil
                 if program.categories then
                     for _, category in ipairs(program.categories) do
-                        if programs[category] then
-                            target_category = category
-                            break
-                        end
+		    	if string.find(category, "Wine") then
+			   target_category = "Wine"
+			   break
+			else 
+	                   if programs[category] then
+        	               target_category = category
+                	       break
+                           end
+			end
                     end
                 end
                 if not target_category then
@@ -81,6 +87,7 @@ function new(arg)
         { "Office", programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
         { "Other", programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
         { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'preferences-desktop.png' }) },
+	{ "Wine", programs["Wine"], utils.lookup_icon({ icon = 'applications-utilities.png' }) },
         { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
     }
 

@@ -77,7 +77,7 @@ end
 -- @param showlabels Shows icon captions (default is false)
 function add_applications_icons(arg)
     for i, program in ipairs(utils.parse_desktop_files({
-        dir = arg.dir or '~/Desktop/',
+        dir = arg.dir or '~/Desktop',
         icon_sizes = {
             iconsize.width .. "x" .. iconsize.height,
             "128x128", "96x96", "72x72", "64x64", "48x48",
@@ -100,9 +100,9 @@ end
 -- @param showlabels Shows icon captions
 -- @param open_with The program to use to open clicked files and dirs (i.e. xdg_open, thunar, etc.)
 function add_dirs_and_files_icons(arg)
-    arg.open_with = arg.open_width or 'thunar'
+    arg.open_with = arg.open_with or 'xdg-open'
     for i, file in ipairs(utils.parse_dirs_and_files({
-        dir = arg.dir or '~/Desktop/',
+        dir = arg.dir or '~/Desktop',
         icon_sizes = {
             iconsize.width .. "x" .. iconsize.height,
             "128x128", "96x96", "72x72", "64x64", "48x48",
