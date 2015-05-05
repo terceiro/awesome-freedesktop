@@ -1,3 +1,4 @@
+-- -*- lua-indent-level: 4; indent-tabs-mode: nil -*-
 -- Grab environment
 
 local io = io
@@ -6,6 +7,7 @@ local table = table
 local type = type
 local ipairs = ipairs
 local pairs = pairs
+local dirs = require("freedesktop.dirs")
 
 module("freedesktop.utils")
 
@@ -34,11 +36,23 @@ all_icon_types = {
     'status',
     'mimetypes'
 }
-all_icon_paths = { os.getenv("HOME") .. '/.icons/', '/usr/share/icons/' }
-
-icon_sizes = {}
+all_icon_paths = {}
 
 local mime_types = {}
+
+local function _init_all_icon_paths()
+    for _,dir in ipairs({ os.getenv("HOME") .. '/.icons/',
+                          dirs.xdg_data_home() .. 'icons/'}) do
+        if directory_exists(dir) then
+            table.insert(all_icon_paths, dir)
+        end
+    end
+    for _,dir in ipairs(dirs.xdg_data_dirs()) do
+        if directory_exists(dir .. 'icons/') then
+            table.insert(all_icon_paths, dir .. 'icons/')
+        end
+    end
+end
 
 function get_lines(...)
     local f = io.popen(...)
@@ -47,6 +61,17 @@ function get_lines(...)
         if data == nil then f:close() end
         return data
     end
+end
+
+function directory_exists(filename)
+    local file = io.open(filename)
+    local result = (file ~= nil)
+    if result then
+        local a,b,c = file:read(0)
+        file:close()
+        result = (c == 21)
+    end
+    return result
 end
 
 function file_exists(filename)
@@ -67,34 +92,42 @@ function lookup_icon(arg)
         local icon_themes = {}
         local icon_theme_paths = {}
         if icon_theme and type(icon_theme) == 'table' then
-            icon_themes = icon_theme
+            icon_themes = {}
+            for k,v in pairs(icon_theme) do
+                icon_themes[k] = v
+            end
         elseif icon_theme then
             icon_themes = { icon_theme }
         end
+        table.insert(icon_themes, 'hicolor')
         for i, theme in ipairs(icon_themes) do
             for j, path in ipairs(all_icon_paths) do
-                table.insert(icon_theme_paths, path .. theme .. '/')
+                if directory_exists(path .. theme) then
+                    table.insert(icon_theme_paths, path .. theme .. '/')
+                end
             end
             -- TODO also look in parent icon themes, as in freedesktop.org specification
         end
-        table.insert(icon_theme_paths, '/usr/share/icons/hicolor/') -- fallback theme cf spec
 
-        local isizes = icon_sizes
+        local isizes = {}
         for i, sz in ipairs(all_icon_sizes) do
             table.insert(isizes, sz)
         end
 
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
             for j, size in ipairs(arg.icon_sizes or isizes) do
-                for k, icon_type in ipairs(all_icon_types) do
-                    table.insert(icon_path, icon_theme_directory .. size .. '/' .. icon_type .. '/')
+                if directory_exists(icon_theme_directory .. size) then
+                    for k, icon_type in ipairs(all_icon_types) do
+                        local p = icon_theme_directory .. size .. '/' .. icon_type
+                        if directory_exists(p) then
+                            table.insert(icon_path, p .. '/')
+                        end
+                    end
                 end
             end
         end
-        -- lowest priority fallbacks
+        -- lowest priority fallback
         table.insert(icon_path,  '/usr/share/pixmaps/')
-        table.insert(icon_path,  '/usr/share/icons/')
-        table.insert(icon_path,  '/usr/share/app-install/icons/')
 
         for i, directory in ipairs(icon_path) do
             if (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) and file_exists(directory .. arg.icon) then
@@ -253,3 +286,4 @@ function parse_dirs_and_files(arg)
     return files
 end
 
+_init_all_icon_paths()
