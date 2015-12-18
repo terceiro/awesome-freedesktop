@@ -100,7 +100,7 @@ end
 -- @param showlabels Shows icon captions
 -- @param open_with The program to use to open clicked files and dirs (i.e. xdg_open, thunar, etc.)
 function add_dirs_and_files_icons(arg)
-    arg.open_with = arg.open_width or 'thunar'
+    arg.open_with = arg.open_with or 'thunar'
     for i, file in ipairs(utils.parse_dirs_and_files({
         dir = arg.dir or '~/Desktop/',
         icon_sizes = {
