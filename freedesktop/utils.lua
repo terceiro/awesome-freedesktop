@@ -15,6 +15,8 @@ terminal = 'xterm'
 
 icon_theme = nil
 
+lang = nil
+
 all_icon_sizes = {
     '128x128',
     '96x96',
@@ -195,7 +197,7 @@ end
 function parse_desktop_file(arg)
     local program = { show = true, file = arg.file }
     for line in io.lines(arg.file) do
-        for key, value in line:gmatch("(%w+)=(.+)") do
+        for key, value in line:gmatch("(.+)=(.+)") do
             program[key] = value
         end
     end
@@ -236,6 +238,10 @@ function parse_desktop_file(arg)
             cmdline = terminal .. ' -e ' .. cmdline
         end
         program.cmdline = cmdline
+    end
+
+    if lang and program["Name["..lang.."]"] then
+        program.Name = program["Name["..lang.."]"]
     end
 
     return program

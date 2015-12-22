@@ -57,7 +57,16 @@ the rest of the items.
   require('freedesktop.utils')
   freedesktop.utils.terminal = terminal  -- default: "xterm"
   freedesktop.utils.icon_theme = 'gnome' -- look inside /usr/share/icons/, default: nil (don't use icon theme)
+
+  -- set a language code to use - application names will show in the given language if possible
+  -- freedesktop.utils.lang = 'fr'
+
   require('freedesktop.menu')
+
+  -- you can change menu categories names before creating a new one (useful for translation)
+  -- all categories keys are visible in the freedesktop/menu.lua
+  -- freedesktop.categories.accessories = "Accessoires"
+
   -- require("debian.menu")
 
   menu_items = freedesktop.menu.new()

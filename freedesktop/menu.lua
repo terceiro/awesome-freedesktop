@@ -17,6 +17,20 @@ all_menu_dirs = {
 
 show_generic_name = false
 
+categories = {
+    accessories = "Accessories",
+    dev = "Development",
+    education = "Education",
+    games = "Games",
+    graphics = "Graphics",
+    web = "Internet",
+    media = "Multimedia",
+    office = "Office",
+    other = "Other",
+    settings = "Settings",
+    system = "System Tools"
+}
+
 --- Create menus for applications
 -- @param menu_dirs A list of application directories (optional).
 -- @return A prepared menu w/ categories
@@ -71,17 +85,17 @@ function new(arg)
     end
 
     local menu = {
-        { "Accessories", programs["Utility"], utils.lookup_icon({ icon = 'applications-accessories.png' }) },
-        { "Development", programs["Development"], utils.lookup_icon({ icon = 'applications-development.png' }) },
-        { "Education", programs["Education"], utils.lookup_icon({ icon = 'applications-science.png' }) },
-        { "Games", programs["Game"], utils.lookup_icon({ icon = 'applications-games.png' }) },
-        { "Graphics", programs["Graphics"], utils.lookup_icon({ icon = 'applications-graphics.png' }) },
-        { "Internet", programs["Network"], utils.lookup_icon({ icon = 'applications-internet.png' }) },
-        { "Multimedia", programs["AudioVideo"], utils.lookup_icon({ icon = 'applications-multimedia.png' }) },
-        { "Office", programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
-        { "Other", programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
-        { "Settings", programs["Settings"], utils.lookup_icon({ icon = 'preferences-desktop.png' }) },
-        { "System Tools", programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
+        { categories.accessories, programs["Utility"], utils.lookup_icon({ icon = 'applications-accessories.png' }) },
+        { categories.dev, programs["Development"], utils.lookup_icon({ icon = 'applications-development.png' }) },
+        { categories.education, programs["Education"], utils.lookup_icon({ icon = 'applications-science.png' }) },
+        { categories.games, programs["Game"], utils.lookup_icon({ icon = 'applications-games.png' }) },
+        { categories.graphics, programs["Graphics"], utils.lookup_icon({ icon = 'applications-graphics.png' }) },
+        { categories.web, programs["Network"], utils.lookup_icon({ icon = 'applications-internet.png' }) },
+        { categories.media, programs["AudioVideo"], utils.lookup_icon({ icon = 'applications-multimedia.png' }) },
+        { categories.office, programs["Office"], utils.lookup_icon({ icon = 'applications-office.png' }) },
+        { categories.other, programs["Other"], utils.lookup_icon({ icon = 'applications-other.png' }) },
+        { categories.settings, programs["Settings"], utils.lookup_icon({ icon = 'preferences-desktop.png' }) },
+        { categories.system, programs["System"], utils.lookup_icon({ icon = 'applications-system.png' }) },
     }
 
     -- Removing empty entries from menu
