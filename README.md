@@ -47,6 +47,7 @@ You can use the freedesktop module in your awesome configuration
 you can also uncomment the two lines that insert the Debian menu together with
 the rest of the items.
 
+```
   -- applications menu
   require('freedesktop.utils')
   freedesktop.utils.terminal = terminal  -- default: "xterm"
@@ -77,6 +78,7 @@ the rest of the items.
         freedesktop.desktop.add_applications_icons({screen = s, showlabels = true})
         freedesktop.desktop.add_dirs_and_files_icons({screen = s, showlabels = true})
   end
+```
 
 License
 =======
