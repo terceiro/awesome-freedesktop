@@ -1,0 +1,39 @@
+#!/bin/env bash
+
+############################################################################
+# Simple bash script to install the freedesktop menu into awesome-wm
+############################################################################
+
+USAGE="Usage: `basename $0` <+parameter+>"
+
+#TODO: check for distro and create sane install procedure
+
+mysysdir=/etc/xdg/awesome
+myconfdir=~/.config/awesome
+myconf=$myconfdir/rc.lua
+
+# Check for local config dir
+# if [[ -d ~/.config/awesome ]] then
+if [[ -d $myconfdir ] then
+echo "local configdir exists!\n"
+else
+  # mkdir -p ~/.config/awesome
+  mkdir -p $myconfdir
+  echo "local directory for configuration files created in ~/.config/awesome\n"
+fi
+
+# Check for local rc file
+if [[ -f $myconf ]] then
+  echo "local rc file exists!\n"
+else
+  # cp /etc/xdg/awesome/rc.lua
+  # cp $mysysdir/rc.lua $myconfdir/
+  cp $mysysdir/rc.lua $myconf
+fi
+
+cp -r ./freedesktop $myconfdir/
+cat rc.lua.append >> $myconf
+echo "Success!"
+
+exit
+
