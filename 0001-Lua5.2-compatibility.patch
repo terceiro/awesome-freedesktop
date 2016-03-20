@@ -1,0 +1,33 @@
+From f1962545d3a8a8e85429c291a680cdfb70682ac4 Mon Sep 17 00:00:00 2001
+From: ILMostro <ilmostro7@gmail.com>
+Date: Sat, 6 Sep 2014 12:26:01 -0500
+Subject: [PATCH] Lua5.2 compatibility
+
+---
+ freedesktop/desktop.lua | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/freedesktop/desktop.lua b/freedesktop/desktop.lua
+index 2188da38..05c448a6 100644
+--- a/freedesktop/desktop.lua
++++ b/freedesktop/desktop.lua
+@@ -1,5 +1,5 @@
+-local wibox = wibox
+-local widget = widget
++local wibox = require("wibox") 
++local widget = require("wibox.widget")
+ local screen = screen
+ local image = image
+ local button = button
+@@ -51,7 +51,7 @@ function add_icon(settings)
+     end
+ 
+     if (settings.label) then
+-        caption = widget({ type="textbox", align="right", width=labelsize.width })
++        caption = widget.textbox()
+         caption.ellipsize = "middle"
+         caption.text = settings.label
+         caption:buttons({
+-- 
+1.9.3
+

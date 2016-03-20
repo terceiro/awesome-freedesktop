@@ -1,5 +1,5 @@
-local wibox = wibox
-local widget = widget
+local wibox = require("wibox") 
+local widget = require("wibox.widget")
 local screen = screen
 local image = image
 local button = button
@@ -51,7 +51,7 @@ function add_icon(settings)
     end
 
     if (settings.label) then
-        caption = widget({ type="textbox", align="right", width=labelsize.width })
+        caption = widget.textbox()
         caption.ellipsize = "middle"
         caption.text = settings.label
         caption:buttons({
