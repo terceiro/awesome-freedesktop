@@ -7,6 +7,7 @@ local table = table
 local type = type
 local ipairs = ipairs
 local pairs = pairs
+local tonumber = tonumber
 local dirs = require("freedesktop.dirs")
 
 module("freedesktop.utils")
@@ -16,16 +17,16 @@ terminal = 'xterm'
 icon_theme = nil
 
 all_icon_sizes = {
-    '128x128',
-    '96x96',
-    '72x72',
-    '64x64',
-    '48x48',
-    '36x36',
-    '32x32',
-    '24x24',
-    '22x22',
-    '16x16'
+    '128',
+    '96',
+    '72',
+    '64',
+    '48',
+    '36',
+    '32',
+    '24',
+    '22',
+    '16'
 }
 all_icon_types = {
     'apps',
@@ -37,6 +38,7 @@ all_icon_types = {
     'mimetypes'
 }
 all_icon_paths = {}
+local icon_theme_data = nil
 
 local mime_types = {}
 
@@ -83,44 +85,87 @@ function file_exists(filename)
     return result
 end
 
+function string_split(string, separator)
+    local separator, fields = separator or ":", {}
+    local pattern = string.format("([^%s]+)", separator)
+    string:gsub(pattern, function(c) fields[#fields + 1] = c end)
+    return fields
+end
+
 function lookup_icon(arg)
     if arg.icon:sub(1, 1) == '/' and (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) then
         -- icons with absolute path and supported (AFAICT) formats
         return arg.icon
     else
-        local icon_path = {}
-        local icon_themes = {}
-        local icon_theme_paths = {}
-        if icon_theme and type(icon_theme) == 'table' then
-            icon_themes = {}
-            for k,v in pairs(icon_theme) do
-                icon_themes[k] = v
+        -- scan theme directories if no cached theme data found
+        if not icon_theme_data then
+            local initial_themes = {}
+            if icon_theme and type(icon_theme) == 'table' then
+                for k,v in pairs(icon_theme) do
+                    initial_themes[k] = v
+                end
+            elseif icon_theme then
+                initial_themes = { icon_theme }
             end
-        elseif icon_theme then
-            icon_themes = { icon_theme }
-        end
-        table.insert(icon_themes, 'hicolor')
-        for i, theme in ipairs(icon_themes) do
-            for j, path in ipairs(all_icon_paths) do
-                if directory_exists(path .. theme) then
-                    table.insert(icon_theme_paths, path .. theme .. '/')
+            local has_hicolor = false
+            for i, theme in ipairs(initial_themes) do
+                if (theme == 'hicolor') then
+                    has_hicolor = true
+                    break
                 end
             end
-            -- TODO also look in parent icon themes, as in freedesktop.org specification
+            if not has_hicolor then
+                table.insert(initial_themes, 'hicolor')
+            end
+            icon_theme_data = scan_theme_data(initial_themes)
         end
 
-        local isizes = {}
-        for i, sz in ipairs(all_icon_sizes) do
-            table.insert(isizes, sz)
+        local icon_themes = {}
+        if arg.icon_themes then
+            if type(arg.icon_themes) ~= 'table' then
+                arg.icon_themes = { arg.icon_themes }
+            end
+            icon_themes = arg.icon_themes
+        else
+            icon_themes = icon_theme_data.themes.ordered
         end
 
-        for i, icon_theme_directory in ipairs(icon_theme_paths) do
-            for j, size in ipairs(arg.icon_sizes or isizes) do
-                if directory_exists(icon_theme_directory .. size) then
-                    for k, icon_type in ipairs(all_icon_types) do
-                        local p = icon_theme_directory .. size .. '/' .. icon_type
-                        if directory_exists(p) then
-                            table.insert(icon_path, p .. '/')
+        local icon_sizes
+        if arg.icon_sizes then
+            if type(arg.icon_sizes) ~= 'table' then
+                arg.icon_sizes = { arg.icon_sizes }
+            end
+            for j, icon_size in ipairs(arg.icon_sizes) do
+                local size
+                -- support old NNxNN format
+                icon_size:gsub('^(%d+)x(%d+)$', function(s1, s2)
+                    if s1 == s2 then
+                        size = s1
+                    end
+                end)
+                if not size then
+                    size = icon_size
+                end
+                if not icon_sizes then
+                    icon_sizes = {}
+                end
+                table.insert(icon_sizes, size)
+            end
+        end
+
+        local icon_path = {}
+        for i, theme in ipairs(icon_themes) do
+            local sizes
+            if icon_sizes then
+                sizes = icon_sizes
+            elseif icon_theme_data.sizes.ordered[theme] then
+                sizes = icon_theme_data.sizes.ordered[theme]
+            end
+            if icon_theme_data.paths[theme] and sizes then
+                for j, size in ipairs(sizes) do
+                    if icon_theme_data.paths[theme][size] then
+                        for k, path in ipairs(icon_theme_data.paths[theme][size]) do
+                            table.insert(icon_path, path)
                         end
                     end
                 end
@@ -190,13 +235,14 @@ end
 
 --- Parse a .desktop file
 -- @param file The .desktop file
--- @param requested_icon_sizes A list of icon sizes (optional). If this list is given, it will be used as a priority list for icon sizes when looking up for icons. If you want large icons, for example, you can put '128x128' as the first item in the list.
+-- @param requested_icon_sizes A list of icon sizes (optional). If this list is given, it will be used as a priority list for icon sizes when looking up for icons. If you want large icons, for example, you can put '128' as the first item in the list.
 -- @return A table with file entries.
 function parse_desktop_file(arg)
     local program = { show = true, file = arg.file }
-    for line in io.lines(arg.file) do
-        for key, value in line:gmatch("(%w+)=(.+)") do
-            program[key] = value
+    local file_data = parse_sectioned_file(arg)
+    if file_data['Desktop Entry'] then
+        for key in pairs(file_data['Desktop Entry']) do
+            program[key] = file_data['Desktop Entry'][key]
         end
     end
 
@@ -284,6 +330,151 @@ function parse_dirs_and_files(arg)
         end
     end
     return files
+end
+
+function parse_theme_index_file(arg)
+    local theme_index = { inherits = nil, sizes = {}, paths = {} }
+    local file_data = parse_sectioned_file(arg)
+    local paths
+    if file_data['Icon Theme'] then
+        if file_data['Icon Theme']['Inherits'] then
+            theme_index.inherits = string_split(file_data['Icon Theme']['Inherits'], "%s*,%s*")
+        end
+        if file_data['Icon Theme']['Directories'] then
+            paths = string_split(file_data['Icon Theme']['Directories'], "%s*,%s*")
+        end
+    end
+    if paths then
+        local sizes = {}
+        for i, path in ipairs(paths) do
+            if file_data[path] and file_data[path]['Size'] then
+                local type = file_data[path]['Type']
+                if (not type or type:lower() == 'threshold' or type:lower() == 'fixed') then
+                    local size = file_data[path]['Size']
+                    if not theme_index.paths[size] then
+                        theme_index.paths[size] = {}
+                    end
+                    if not sizes[size] then
+                        table.insert(theme_index.sizes, size)
+                        sizes[size] = true
+                    end
+                    table.insert(theme_index.paths[size], path)
+                end
+            end
+        end
+        table.sort(theme_index.sizes, function(a, b)
+            return tonumber(a) > tonumber(b)
+        end)
+    end
+    return theme_index
+end
+
+function parse_sectioned_file(arg)
+    local data = {}
+    local current_section
+    for line in io.lines(arg.file) do
+        line:gsub("^%s*%[([^%]]+)%]%s*$", function(section)
+            current_section = section
+            data[section] = {}
+        end)
+        line:gsub("^%s*(%w+)%s*=%s*(.+)%s*$", function(key, value)
+            if current_section then
+                data[current_section][key] = value
+            end
+        end)
+    end
+    return data
+end
+
+function scan_theme_data(icon_themes, theme_data)
+    if not theme_data then
+        theme_data = {}
+    end
+    for i, theme in ipairs(icon_themes) do
+        if not theme_data.themes then
+            theme_data.themes = { ordered = {}, lookup = {} }
+        end
+        if not theme_data.sizes then
+            theme_data.sizes = { ordered = {}, lookup = {} }
+        end
+        if not theme_data.paths then
+            theme_data.paths = {}
+        end
+        if theme_data.themes.lookup[theme] then
+            return theme_data
+        end
+        if not theme_data.themes.lookup[theme] then
+            theme_data.themes.lookup[theme] = true
+            table.insert(theme_data.themes.ordered, theme)
+            for j, icon_path in ipairs(all_icon_paths) do
+                local theme_path = icon_path .. theme
+                if directory_exists(theme_path) then
+                    local theme_index_file = theme_path .. '/index.theme'
+                    local sizes, paths, inherited_themes
+                    if file_exists(theme_index_file) then
+                        local theme_index = parse_theme_index_file({ file = theme_index_file })
+                        sizes = theme_index.sizes
+                        paths = theme_index.paths
+                        if theme_index.inherits then
+                            inherited_themes = theme_index.inherits
+                        end
+                    else
+                        sizes, paths = find_all_icon_paths(theme_path)
+                    end
+                    if sizes and paths then
+                        for k, size in ipairs(sizes) do
+                            if not theme_data.sizes.lookup[theme] then
+                                theme_data.sizes.lookup[theme] = {}
+                            end
+                            if not theme_data.sizes.lookup[theme][size] then
+                                theme_data.sizes.lookup[theme][size] = true
+                                if not theme_data.sizes.ordered[theme] then
+                                    theme_data.sizes.ordered[theme] = {}
+                                end
+                                table.insert(theme_data.sizes.ordered[theme], size)
+                            end
+                            for l, path in ipairs(paths[size]) do
+                                if not theme_data.paths[theme] then
+                                    theme_data.paths[theme] = {}
+                                end
+                                if not theme_data.paths[theme][size] then
+                                    theme_data.paths[theme][size] = {}
+                                end
+                                table.insert(theme_data.paths[theme][size], theme_path .. '/' .. path .. '/')
+                            end
+                        end
+                    end
+                    if inherited_themes then
+                        theme_data = scan_theme_data(inherited_themes, theme_data)
+                    end
+                end
+            end
+        end
+    end
+    return theme_data
+end
+
+function find_all_icon_paths(icon_theme_directory)
+    local sizes = {}
+    local paths = {}
+    for i, size in ipairs(all_icon_sizes) do
+        local size_dir = size .. 'x' .. size
+        local size_path = icon_theme_directory .. '/' .. size_dir
+        if directory_exists(size_path) then
+            for j, icon_type in ipairs(all_icon_types) do
+                local icon_dir = size_dir .. '/' .. icon_type
+                local icon_path = icon_theme_directory .. '/' .. icon_dir
+                if directory_exists(icon_path) then
+                    if not paths[size] then
+                        paths[size] = {}
+                    end
+                    table.insert(sizes, size)
+                    table.insert(paths[size], icon_dir .. '/')
+                end
+            end
+        end
+    end
+    return sizes, paths
 end
 
 _init_all_icon_paths()
