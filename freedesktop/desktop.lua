@@ -79,9 +79,9 @@ function add_applications_icons(arg)
     for i, program in ipairs(utils.parse_desktop_files({
         dir = arg.dir or '~/Desktop/',
         icon_sizes = {
-            iconsize.width .. "x" .. iconsize.height,
-            "128x128", "96x96", "72x72", "64x64", "48x48",
-            "36x36", "32x32", "24x24", "22x22", "16x6"
+            iconsize.width,
+            "128", "96", "72", "64", "48",
+            "36", "32", "24", "22", "16"
         }
     })) do
         if program.show then
@@ -104,9 +104,9 @@ function add_dirs_and_files_icons(arg)
     for i, file in ipairs(utils.parse_dirs_and_files({
         dir = arg.dir or '~/Desktop/',
         icon_sizes = {
-            iconsize.width .. "x" .. iconsize.height,
-            "128x128", "96x96", "72x72", "64x64", "48x48",
-            "36x36", "32x32", "24x24", "22x22", "16x6"
+            iconsize.width,
+            "128", "96", "72", "64", "48",
+            "36", "32", "24", "22", "16"
         }
     })) do
         if file.show then
