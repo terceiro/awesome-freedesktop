@@ -25,7 +25,9 @@ all_icon_sizes = {
     '32x32',
     '24x24',
     '22x22',
-    '16x16'
+    '16x16',
+    '8x8',
+    'scalable'
 }
 all_icon_types = {
     'apps',
@@ -84,7 +86,7 @@ function file_exists(filename)
 end
 
 function lookup_icon(arg)
-    if arg.icon:sub(1, 1) == '/' and (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) then
+    if arg.icon:sub(1, 1) == '/' and (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm') or arg.icon:find('.+%.svg')) then
         -- icons with absolute path and supported (AFAICT) formats
         return arg.icon
     else
@@ -130,12 +132,14 @@ function lookup_icon(arg)
         table.insert(icon_path,  '/usr/share/pixmaps/')
 
         for i, directory in ipairs(icon_path) do
-            if (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm')) and file_exists(directory .. arg.icon) then
+            if (arg.icon:find('.+%.png') or arg.icon:find('.+%.xpm') or arg.icon:find('.+%.svg')) and file_exists(directory .. arg.icon) then
                 return directory .. arg.icon
             elseif file_exists(directory .. arg.icon .. '.png') then
                 return directory .. arg.icon .. '.png'
             elseif file_exists(directory .. arg.icon .. '.xpm') then
                 return directory .. arg.icon .. '.xpm'
+            elseif file_exists(directory .. arg.icon .. '.svg') then
+                return directory .. arg.icon .. '.svg'
             end
         end
     end
